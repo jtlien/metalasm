@@ -1,0 +1,7 @@
+
+constants::Symboltable
+constants=[("SGL",0),("DBL",1),("EXT",3),("NEAREST",0),
+           ("ZERO",1),("PLUS INF",2),("MINUS INF",3),
+           ("INTEGER.OVFL",0),("INTEGER.DIV0",4),("FLOATING.INVL",5),
+           ("FLOATING.INEX",6)]
+

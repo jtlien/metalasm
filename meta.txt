@@ -1,0 +1,202 @@
+
+
+ A meta-assembler using Haskell.  You need to install the ghc ( Glascow Haskell
+ Compiler) from www.haskell.org/ghc.
+
+ bitfields specified in bitfields file
+
+  These are defined using the Haskell integer list syntax.
+
+  for example   address=[32..36] identifies bits 32 to 36 as and address field;
+
+
+ Macros are made up by assigning bitfields values, either as constants,
+ or as parameters.
+
+   ("NAD",[("address",address,Sval "$1")])
+
+  specifies a macro NAD that assigns a value address field as a parameter.
+  
+  you would use NAD by having a line in the microcode such as:
+
+  NAD(FREM.32)
+
+  where FREM.32 is a symbol that will be evaluated to a value, the value
+  will then be placed into the address field (bits 32..36).
+
+
+ Values assigned in the macros can be either symbolic ( Sval ) or
+  integer (Ival).  So to assign the value 3 to a bit field muxsel in the macro
+  "MUX SEL" you would have
+
+  ("MUX SEL",[("muxsel",muxsel,Ival 3)] )
+
+  Note that there is a reserved symbol "ca" that equates to the location
+  of the current instruction.
+
+  Instructions are made up of :
+
+  LABEL:
+           MACRO 1,
+           MACRO 2,
+           .
+           .
+           .
+           MACRO N;
+
+
+  In other words an instruction is a label (or labels) followed by 0 to N
+   macros  separated by commas, followed by a semicolon to terminate the 
+  instruction.  Each instruction will be assembled into a memory word of
+  width determined by the setting of the variable "bitwidth".  In the
+  example, in the bitfields file the bitwidth is set to 96 for 96 
+  bit wide words.
+
+  Macros are specified with a tuple consisting of ( String, [Assignments])
+  where string is the text of the macro, and [Assignments] is the list
+  of assignments to produce the macro.   The Assignments are themselves
+  tuples of ( bitfieldname, bitfield, Ival | Sval ) where bitfieldname is a
+  string, where bitfield is itself a list
+  of integers representing the bits that will be set, and Ival is an 
+  integer value and Sval is a symbolic value ( a string).  If the
+  symbolic value is "$n" it refers to the n'th parameter of the 
+  macro invocation.   So you could define a macro as below
+
+  ("MYMAC",[("bitfielda",bitfielda,Sval "$1"),("bitfieldb",bitfieldb,Sval "$2")] 
+
+  this would be invoked by using
+
+    MYMAC(34,40)
+
+  which would assign 34 for bitfielda and 40 to bitfieldb.
+
+  Limited arithmetic is allowed in the symbol assignments.
+
+  ("MYMACX",[(bitfielda",bitfielda,Sval "$1+3")]  is allowed for example.
+
+  There is a built in ORG statement that sets the next instruction location
+  to a specific value.
+
+ ORG=#324;   will set the current location to 324 hex.  This means for
+ the next instruction, the built in "ca" symbol will be 324hex.
+
+
+
+ 
+ Author:  lienmeister@gmail.com
+
+
+------------------------------------------------------------------------------
+
+  Makeing a Meta-assembler
+
+  The meta-assembler source is made up of a Haskell header file.
+
+  header.hs
+
+  followed by the field definitions.  This is used to define the bit fields
+  of the instruction word.
+
+  
+  bitfields
+
+
+  followed by the field defaults.  This will be what the field will be set
+  to if no macro invocation sets it otherwise.
+
+
+  defaults
+
+  followed by constants
+  these are the constants to be used by the meta-assembler.  Similar to
+  define statements in C.
+
+  constants
+
+
+  followed by the macro definitions.   This allows you to set one or more
+  fields to values.  macro definitions can be parameterized.
+
+  macros
+
+
+  This is then followed by the tail.hs file that contains the Haskell
+  functions that will be used to evaluate the input microcode.
+
+
+  tail.hs
+
+
+  In the build_meta.bat script, the files 
+
+       header.ps
+       fields
+       defaults
+       macros
+       constants
+       tailn
+       main_metalasm.hs
+       
+  are concatenated together to create metalasm.hs.
+  The metalasm.hs is compiled using ghc and the executable is renamed metalasm.
+
+
+  The meta-assembler can now be run by running
+
+      metalasm infile  >outfile
+
+
+     The input file (infile) is generated from the source file by
+     running the metapre preprocessor program.
+
+     The source file consists of directive statements and 
+      source code statements.
+     A source code statement consists of one or more labels, followed
+         by multiple macro invocations, followed by a semicolon;
+
+     The directive statements include:
+     They all begin with a '*' character.
+
+             *ORG  value    --  set the current address to value
+             *REPEAT value   --  repeat the next instruction n times (value=n)
+             *SKIP   value   -- increment the current address by n (value=n)
+             *GLOBAL label  -- declare a global label (label must correspond
+                                   to a source statement label).
+             *ALIGN   value  --  value must be power of 2.  Set the
+                                  current address to the next larger address
+                                  such that address mod n = 0 where (value=n)
+                                
+            The value field is assumed to be decimal digits, unless
+             the first two characters are 0b,0o or 0x.  Then the value
+             is interpreted as being binary, octal or hexadecimal.
+      
+        The directive statements are processed by the metapre program.  This
+        program generates a file source_file.pre that shows the result
+        of preprocessing.   It will also generate a file source_file.glb that
+        lists the global labels and their addresses for this source file.
+       
+
+  Output will be put out to standard out.
+
+
+
+   Linking
+  
+       To link separate source files together you can run the bm.bat
+    script on each source file.   This will create a source_file.glb
+    file for each source file.   This file will contain the global labels
+    for each source.   The individual global files ( .gbl) can be combined
+    by the metaglob program.   
+
+          metaglob [list of .glb files]     
+
+       Makeglob creates an output file called "globals".    This file
+     combines all the .glb file data and puts it into a form the metalasm.hs
+     file expects.   Once this file is set up, the individual source
+     files can be reassembled using the bmn_link.bat script.  Finally,
+     the individual .hex files created can be combined using the metalink
+     command.
+
+          metalink [list of .hex files]
+      
+      

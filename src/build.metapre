@@ -1,0 +1,2 @@
+gcc metapre.c
+cp a.exe metapre

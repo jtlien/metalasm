@@ -1,0 +1,3 @@
+./makeallfields bitfields
+cat header.hs bitfields defaults allfields constants macros tailn.hs main_disassemble.hs  >metaldisasm.hs
+ghc --make metaldisasm.hs

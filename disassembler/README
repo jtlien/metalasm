@@ -1,0 +1,11 @@
+
+  The script builddisassemble will build the disassembler.
+  The binary created is metaldisasm
+
+  To run the disassembler
+
+    metaldisasm  xx.hex >out.dis
+
+  In this directory,
+    metaldisasm  micro_example.hex >micro_example.dis
+    

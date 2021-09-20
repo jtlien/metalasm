@@ -1,0 +1,9 @@
+cat bitfields | grep "=" | grep -v "bitwidth" |  sed '1,$s/=.*//' >x1
+paste -d"," x1 x1 >x2
+cat x2 | sed  '1,$s/^/("/' | sed '1,$s/,/",/' | sed '1,$s/$/),/' >x3
+cat x3 | sed '1s/^/allfields = [/' | sed '$s/),/)]/' | sed '2,$s/^/  /' >allfields
+rm x1
+rm x2
+rm x3
+
+

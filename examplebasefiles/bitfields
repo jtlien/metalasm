@@ -1,0 +1,68 @@
+
+-- 
+-- microcode fields, must be lower case?
+-- 
+
+-- A word is 
+-- ORG or
+-- Labels and number followed by macros any number followed by ;
+--   macro is  macro_string followed by optional paramlist
+--   paramlist is ( followed by expressions any number followed by )
+--   params are set to $1, $2 .. $n and substituted into 
+--    field definitions for the macro
+
+bitwidth = 96
+
+ben0=[0..2]
+afd=[3]
+ret=[4]
+fdn=[5]
+fdv=[6]
+frcfirst=[7]
+ben1=[8..10]
+nad=[11..20]
+maluzero=[21]
+malu=[21..23]
+quo_bits=[21..23]
+enable_div_misc=[24]
+override_ralu_field=[25]
+residual=[26..27]
+flow_xtos=[28]
+exr_field=[29]
+eyr_field=[30]
+shift=[31..32]
+mark_bit=[33]
+input_lat_field=[34]
+mul_cnt_msb=[34]
+enable_excp=[35]
+msc_a=[36..39]
+msc_b=[40..43]
+emit=[44..59]
+msc_c=[44..47]
+msc_d=[48..51]
+wire_or=[48..51]
+div_clk=[44..47]
+rfx_wr_addr=[44..47]
+emit_right_half=[52..59]
+emit_right_three=[48..59]
+shift_l_r=[52]
+shift_ge_64=[53]
+shift_dist=[54..59]
+rfx_rd_addr=[52..59]
+interrupt_mask=[52..59]
+latx=[60]
+laty=[61]
+exmx=[60..61]
+exl_field=[62]
+eyl_field=[63]
+eymx=[62..63]
+flow_sel=[64..65]
+sign=[64,65,74]
+rf_rd_sel=[66..67]
+ealu=[66..67]
+zero_eymx=[68]
+spare3=[69]
+parity=[70]
+rf_wr_sel=[71]
+flipr=[72]
+flipw=[73]

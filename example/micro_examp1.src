@@ -1,0 +1,2104 @@
+
+ORG=0x000;
+
+DECODE:  NAD(DECODE),
+         BEN 9 MEM OP,
+         ALLOW FIRST DECODE,
+         RF RD SEL HW,
+         FLOW SEL XY,
+         LAT X, LAT Y,
+         EXL,
+         EYL,
+         FLOW X TO S,
+         SHIFT R EXP DIFF,
+         LD AND INCR RF CNTRS;
+         
+ORG=0x001;
+         NAD(DECODE),
+         BEN 9 MEM OP,
+         ALLOW FIRST DECODE,
+         RF RD SEL HW,
+         FLOW SEL XY,
+         LAT X, LAT Y,
+         EXL,EYL,
+         FLOW X TO S,
+         SHIFT R EXP DIFF,
+         LD AND INCR RF CNTRS;
+         
+         
+FADD.32.50:
+FADD.64.50:
+         NAD(FADD.32.100A),
+         BEN 8 EX1 OR EY1 2A,
+         BEN 9 NOT EX0 AND EY0,
+         SHIFT R EXP DIFF,
+         MALU Y+X,
+         EXMX ADD,
+         EYMX ZERO,
+         EALU HW,
+         SIGN ADD;
+         
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+         
+ORG=0x004;
+FADD.80.50:
+         NAD(ca+1),
+         RF RD SEL HW,
+         LAT X,
+         LAT Y,
+         SHIFT R EXP DIFF;
+         
+FADD.80.50E:
+         NAD(FADD.80.150A),
+         BEN 8 EX1 OR EY1 2A,
+         BEN 9 NOT EX0 AND EY0,
+         SHIFT R EXP DIFF,
+         MALU Y+X,
+         EXMX ADD,
+         EALU PASS X,
+         EXR,
+         SIGN ADD;
+         
+ORG=0x006;
+FSUB.32.50:
+FSUB.64.50:
+         NAD(FADD.32.100A),
+         BEN 8 EX1 OR EY1 2A,
+         BEN 9 NOT EX0 AND EY0,
+         SHIFT R EXP DIFF,
+         MALU Y+X,
+         EXMX ADD,
+         EYMX ZERO,
+         EALU HW,
+         SET FSUB LAT,
+         SIGN ADD;
+         
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+         
+ORG=0x008;
+FSUB.80.50:
+         NAD(ca+1),
+         RF RD SEL CNTR,
+         FLOW SEL XY,
+         LAT X, LAT Y,
+         SHIFT R EXP DIFF,
+         SET FSUB LAT;
+         
+         NAD(FADD.80.150A),
+         BEN 8 EX1 OR EY1 2A,
+         BEN 9 NOT EX0 AND EY0,
+         SHIFT R EXP DIFF,
+         MALU Y+X,
+         EXMX ADD,
+         EALU PASS X,
+         EXR,
+         SIGN ADD;
+         
+ORG=0x00A;
+FSUBR.32.50:
+FSUBR.64.50:
+         NAD(FADD.32.100A),
+         BEN 8 EX1 OR EY1 2A,
+         BEN 9 NOT EX0 AND EY0,
+         SHIFT R EXP DIFF,
+         MALU Y+X,
+         EXMX ADD,
+         EYMX ZERO,
+         EALU HW,
+         SET FSUBR LAT,
+         SIGN ADD;
+         
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+       
+ORG=0x00C;
+FREM.64.50:
+         NAD(FREM.64.50.1),
+         FLOW X TO T,
+         SHIFT L EMIT(11),
+         EXMX EXL,
+         EYMX EYL,
+         EALU X-Y,
+         LD RMODE REG(0);
+         
+FREM.64.50.2:
+         NAD(FREM.64.150A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW X TO T,
+         SHIFT L EMIT(0x0B),
+         EXMX EXL,
+         EYMX EYL,
+         EALU X-Y,
+         EXR,
+         EYR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+        
+ORG=0x00E;
+FMUL.32.50:
+         NAD(FMUL.32.100A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         SHIFT L EALU,
+         FLOW X TO S,
+         EXMX EXL,
+         EYMX EMIT(127),
+         EALU X-Y,
+         SIGN MUL OR DIV,
+         EXR;
+       
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+         
+ORG=0x010;
+FMUL.64.50:
+         NAD(FMUL.64.100A),
+         SHIFT L EALU,
+         FLOW X TO S,
+         EXMX EXL,
+         EYMX EMIT(1023),
+         EALU X-Y,
+         SIGN MUL OR DIV,
+         EXR;
+         
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+         
+ORG=0x012;
+FMUL.80.50: 
+         NAD(ca+1),
+         RF RD SEL CNTR,
+         FLOW SEL XY,
+         LAT X, LAT Y,
+         SHIFT R EXP DIFF;
+
+         NAD(FMUL.80.150A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         SHIFT L EALU,
+         FLOW X TO S,
+         LD MUL CNTR 3,
+         EXMX EXL,
+         EYMX EMIT (16383),
+         EALU X-Y,
+         SIGN MUL OR DIV,
+         EXR;
+
+ORG=0x014;
+FDIV.32.50: 
+         NAD  (FDIV.32.100A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW Y TO T,
+         SHIFT L EMIT( 40),
+         EXMX EXL,
+         EYMX EYL,
+         EALU X-Y,
+         EXR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+
+ORG=0x016;
+FDIV.64.50: 
+         NAD(FDIV.64.100A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW Y TO T,
+         EXMX EXL,
+         EYMX EYL,
+         EALU X-Y,
+         EXR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+
+ORG=0x018;
+FDIV.80.100: 
+         NAD(ca+1),
+         RF RD SEL CNTR,
+         FLOW SEL XY,
+         LAT X, LAT Y,
+         SHIFT R EXP DIFF;
+
+         NAD(0x380),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW Y TO T,
+         SHIFT PASS,
+         EXMX EXL,
+         EYMX EYL,
+         EALU X-Y,
+         EXR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+
+ORG=0x01A;
+FDIVR.32.50: 
+         NAD(FDIV.32.100A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW X TO T,
+         SHIFT L EMIT(40),
+         EXMX ZERO,
+         EALU HALF X,
+         EYR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+ 
+         NAD((MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+
+ORG=0x01C;
+FDIVR.64.50: 
+         NAD(FDIVR.64.100A),
+         BEN 8 EX1 OR EY1 26,
+         BEN 9 NOT EX0 OR EY0,
+         FLOW X TO T,
+         SHIFT L EMIT(11),
+         EXMX ZERO,
+         EALU HALF X,
+         EYR,
+         SIGN MUL OR DIV,
+         DIV CLK D,
+         DIV LD D CLR Q,
+         DIV OE;
+
+         NAD((MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+
+ORG=0x01E;
+FDIVRZ.32.500A: 
+         NAD(ca+1),
+         EYMX EMIT (0x7F),
+         EALU PASS Y,
+         INPUT LAT;
+
+FDIVRZ.32.510B:
+         NAD((FDIVRZ.32.515A),
+         FLOW SEL XC,
+         EYL;
+
+         
+ORG=0x020;
+FREM.32.50:
+         NAD(ca+1),
+           FLOW X TO T,
+           SHIFT L EMIT(40),
+           EXMX EXL,
+           EYMX EYL,
+           EALU X-Y,
+           LD RMODE REG(0);
+           
+         NAD(MEMOP.A),
+         BEN 9 ALU DATA NOT VALID;
+         
+         
+ORG=0x022;
+FSQR.32.50:
+         NAD(FSQR.32.100A),
+           BEN 7 EY1,
+           BEN 8 EY0 3C,
+           BEN 9 NOT FY0 3C,
+           FLOW Y TO S,
+           CLEAR D,
+           DIV OE,
+           EXMX EYL;
+           
+           NAD(MEMOP.A),
+           BEN 9 ALU DATA NOT VALID;
+           
+ORG=0x24;
+FINP.32.50:
+         NAD(FINP.32.100A),
+           BEN 9 NOT SIGN EYL,
+           SHIFT R EXP DIFF,
+           FLOW SEL XY,
+           LAT X,
+           EXL,
+           SET XI ZERO LAT,
+           RFX RD(0x2A);
+           
+           NAD(MEMOP.A),
+           BEN 9 ALU DATA NOT VALID;
+           
+ORG=0x026;
+CVT.IS.155C:
+         NAD(CVT.IS.200C),
+           FLOW Y TO T,
+           SHIFT R EMIT(40),
+           MALU PASS Y,
+           EXMX EXR,
+           EALU PASS X,
+           SIGN X OP,
+           MICRO RESET;
+           
+          
+CVT.ID.155C:
+         NAD(CVT.ID.200C),
+           FLOW Y TO T,
+           SHIFT R EMIT(11),
+           MALU PASS Y,
+           EXMX EXR,
+           EALU PASS X,
+           SIGN X OP,
+           MICRO RESET;
+           
+ORG=0x028;
+FCMP.32.50:
+FCMP.BR.32.50:
+FCMP.64.50:
+FCMP.BR.64.50:
+           NAD(ca),
+           SHIFT R EXP DIFF,
+           MALU Y+X,
+           EXMX ADD,
+           EALU PASS X,
+           SIGN ADD,
+           SET FSUB LAT,
+           EXR;
+          
+           NAD(MEMOP.A),
+           BEN 9 ALU DATA NOT VALID;
+           
+ORG=0x02A;
+FCMPX.32.50:
+FCMPX.BR.32.50:
+FCMPX.64.50:
+FCMPX.64.BR.50:
+           NAD(FCMPX.100A),
+           BEN 9 NOT UNORDERED REL,
+           SHIFT R EXP DIFF,
+           MALU Y+X,
+           EXMX ADD,
+           EALU PASS X,
+           SIGN X OP,
+           SET FSUB LAT,
+           EXR;
+           
+                 NAD(MEMOP.A),
+                 BEN 9 ALU DATA NOT VALID;
+
+ORG=0x02C;
+FCMP.80:
+FCMP.BR.80:
+                 NAD( FCMP.32.50),
+                 RF RD SEL CNTR,
+                 FLOW SEL XY,
+                 LAT X, LAT Y,
+                 SHIFT R EXP DIFF;
+
+ORG=0x02D;
+FDIVRZ.32.515A:
+                 NAD( FDIRVRZ.32.520A),
+                 BEN 9 NOT PREC MSB,
+                 FLOW SEL XC,
+                 RFX RD(0x28),
+                 EXL;
+
+ORG=0x02E;
+CVT.SD.50:
+                 NAD(CVT.SD.100A),
+                 BEN 7 EY1,
+                 BEN 8 EY0 3C,
+                 BEN 9 NOT FY0 3C,
+                 EXMX EYL,
+                 EYMX EMIT(896),
+                 EALU X+Y,
+                 SIGN Y OP,
+                 EXR,
+                 FLOW Y TO T,
+                 SHIFT L PRIO ENCODE;
+
+                 NAD(MEMOP.A),
+                 BEN 9 ALU DATA NOT VALID;
+
+ORG=0x030;
+CVT.SE.50:
+                 NAD(CVT.SE.100A),
+                 BEN 7 EY1,
+                 BEN 8 EY0 3C,
+                 BEN 9 NOT FY0 3C,
+                 EXMX EYL,
+                 EYMX EMIT(16256),
+                 EALU X+Y,
+                 SIGN Y OP,
+                 EXR,
+                 FLOW Y TO T,
+                 SHIFT L PRIO ENCODE;
+
+                 NAD(MEMOP.A),
+                 BEN 9 ALU DATA NOT VALID;
+
+ORG=0x32;
+CVT.DS.50:
+                 NAD( CVT.DS.100A),
+                 BEN 7 EY1,
+                 BEN 8 EY0 3C,
+                 BEN 9 NOT FY0 3C,
+                 EXMX EYL,
+                 EYMX EMIT(896),
+                 EALU X-Y,
+                 SIGN Y OP,
+                 EXR,
+                 FLOW Y TO T,
+                 LD BOTH PREC REG 0 (1);
+
+                 NAD(MEMOP.A),
+                 BEN 9 ALU DATA NOT VALID;
+
+ORG=0x034;
+CVT.DE.50:       NAD(CVT.DE.100A),
+                 BEN 7 EY1,
+                 BEN 8 EY0 3C,
+                 BEN 9 NOT FY0 3C,
+                 EXMX EYL,
+                 EYMX EMIT(15360),
+                 EALU X+Y,
+                 SIGN Y OP,
+                 EXR,
+                 FLOW Y TO T,
+                 SHIFT L PRIO ENCODE;
+
+                 NAD(MEMOP.A),
+                 BEN 9 ALU DATA NOT VALID;
+
+ORG=0x036;
+CVT.ES.50:       NAD(ca+1),
+                 RF RD SEL CNTR,
+                 FLOW SEL XY,
+                 LAT X,
+                 LAT Y,
+                 LD MICROFLAGS(1);
+
+                 NAD(CVT.ES.150A),
+                 BEN 7 EY1,
+                 BEN 8 EY0 3C,
+                 EXMX EYL,
+                 EYMX EMIT(16256),
+                 EALU X-Y,
+                 SIGN Y OP,
+                 EXR,
+                 FLOW Y TO T,
+                 LD BOTH PREC REG 0 (3);
+
+ORG=0x038;
+CVT.ED.50:
+                 NAD(ca+1),
+                 RF RD SEL CNTR,
+                 FLOW SEL XY,
+                 LAT X, LAT Y,
+                 LD MICROFLAGS(1);
+                                 
+                 NAD(CVT.ED.150A),
+                     BEN 7 EY1,
+                     BEN 8 EY0 3C,
+                     BEN 9 NOT FY0 3C,
+                     EXMX EYL,
+                     EYMX EMIT(15360),
+                     EALU X-Y,
+                     SIGN Y OP,
+                     EXR,
+                     FLOW Y TO T,
+                     LD BOTH PREC REG 1 (3);
+                     
+ORG=0x03A;
+FRAC.OVFL.100A,1:
+                 NAD(FRAC.OVFL.100A.2),
+                     BEN 8 EXP UNFL,
+                     EXMX EXR,
+                     WIRE OR ZERO,
+                     EALU PASS X;
+                     
+ORG=0x03B;
+                NAD(FRAC.OVFL.100A.2),
+                    EXMX EXR,
+                    EYMX EMIT(1),
+                    EALU X+Y;
+                    
+ORG=0x03C;
+FRAC.OVFL.170.1: 
+                    NAD(FRAC.OVFL.170.2),
+                    MALU ZERO,
+                    OVERRIDE RALU,
+                    PACK EXT FRAC,
+                    ENABLE EXCEPTIONS,
+                    EXMX EXR,
+                    EALU PASS X,
+                    SIGN X OP,
+                    EYR,
+                    INPUT LAT;
+                    
+ORG=0x03D;
+FRAC.OVLF.170B.2:
+                NAD(FRACOVFL.180),
+                    MALU ZERO,
+                    OVERRIDE RALU,
+                    FPA DATA VALID,
+                    EXMX EXR,
+                    EALU PASS X,
+                    SIGN X OP,
+                    EXR;
+                    
+ORG=0x03E;
+CVT.IS.50: 
+                NAD(CVT.IS.100A),
+                    BEN 9 NOT FRACY 00,
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    EYMX EMIT(190),
+                    EALU PASS Y,
+                    EXR,
+                    SET FRC FLAG LO LAT B;
+                    
+                    NAD(MEMOP),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x040;
+CVT.ID.50:
+                NAD(CVT.ID.100A),
+                    BEN 9 NOT FRACY 00,
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    EYMX EMIT(1086),
+                    EALU PASS Y,
+                    EYR,
+                    SET FRC FLAG LO LAT B;
+                    
+                    NAD(MEMOP),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x042;
+CVT.IE.50:  
+                NAD(CVT.IE.100A),
+                    BEN 9 NOT FRACY 00,
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    EYMX EMIT(16446),
+                    EALU PASS Y,
+                    EXR,
+                    SET FRC FLAG LO LAT A;
+                    
+ASCII.SUB.160A:  
+                NAD( ASCII.SUB.160B),
+                    OVERRIDE RALU,
+                    ASCII X-Y,
+                    SHIFT ZERO,
+                    WIRE OR ZERO;
+                    
+ORG=0x044;
+CVT.SI.50:    
+                NAD(CVT.SI.100A),
+                    BEN 7 EY1,
+                    BEN 8 EY0 3C,
+                    BEN 9 NOT FY0 3C,
+                    EYMX EMIT(150),
+                    EALU PASS Y,
+                    EXR,
+                    EYR,
+                    SIGN Y OP,
+                    SET FRC FLAG LO LAT A,
+                    LD BOTH PREC REG 2(0);
+                    
+                NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+
+ORG=0x046;
+CVT.DI.50:      NAD(CVT.SI.100A),
+                BEN 7 EY1,
+                    BEN 8 EY0 3C,
+                    BEN 9 NOT FY0 3C,
+                    EYMX EMIT(1075),
+                    EALU PASS Y,
+                    EXR,
+                    EYR,
+                    SIGN Y OP,
+                    SET FRC FLAG LO LAT A,
+                    LD BOTH PREC REG 2(1);
+                    
+                    NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x048;
+CVT.EI.50:
+                NAD(ca+1),
+                    RF RD SEL CNTR,
+                    FLOW SEL XY,
+                    LAT X, 
+                    LAT Y;
+                    
+                NAD(CVT.SI.100A),
+                    BEN 7 EY1,
+                    BEN 8 EY0 3C,
+                    BEN 9 NOT FY0 3C,
+                    EYMX EMIT(16446),
+                    EALU PASS Y,
+                    EXR,
+                    EYR,
+                    SIGN Y OP,
+                    SET FRC FLAG LO LAT A,
+                    LD BOTH PREC REG 2 (3);
+
+                    
+ORG=0x04A;
+MUL.64.50:
+                NAD(MUL.64.100A),
+                    BEN 9 32 X 32,
+                    LD RALU CNTL HALF X;
+                    
+                    NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x04C;
+DIV.64.50:
+                NAD(DIV.64.100A),
+                    BEN 9 NOT FRACY 00,
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    EXMX ZERO,
+                    EALU HALF X,
+                    EYR,
+                    LD MICROFLAGS(0);
+                    
+                NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x04E;
+DIVR.64.50: 
+                NAD(DIVR.64.100),
+                    FLOW Y TO T,
+                    SHIFT PASS,
+                    EXMX ZERO,
+                    EALU HALF X,
+                    EYR,
+                    LD MICROFLAGS(0);
+                    
+                NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+
+ORG=0x050;
+REM 64.50:
+                NAD(DIV.64.100A),
+                    BEN 9 NOT FRACY 00,
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    EXMX ZERO,
+                    EYMX EMIT(2),
+                    EMIT RIGHT HALF(1),
+                    EALU X+Y,
+                    EYR,
+                    LD MICROFLAGS(0);
+
+                    NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x052;
+REMR.64.50:
+                NAD(DIVR.64.100),
+                    FLOW Y TO T,
+                    EXMX ZERO,
+                    EYMX EMIT(2),
+                    EMIT RIGHT HALF(1),
+                    EALU X+Y,
+                    EYR,
+                    LD MICROFLAGS(0);
+                    
+                    NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x054;
+MULS.128.50: 
+                NAD(MULU.128.150),
+                    SHIFT PASS,
+                    SET MUL LAT,
+                    LD MUL CNTR 3;
+                    
+CVT.ED.200C.1:
+                NAD(CVT.ED.200C),
+                    FPA DATA VALID,
+                    FLOW Y TO T,
+                    SHIFT R EMIT(11),
+                    MALU PASS Y,
+                    EXMX EXR,
+                    EALU PASS X,
+                    SIGN X OP;
+                    
+ORG=0x056;
+MULU.128.50:
+                NAD(MULS.128.50),
+                    SHIFT PASS,
+                    LD BOTH PREC REG 3(2);
+                    
+CVT.ES.200C.1:
+                NAD(CVT.ES.200C),
+                    FPA DATA VALID,
+                    FLOW Y TO T,
+                    SHIFT R EMIT(40),
+                    MALU PASS Y,
+                    EXMX EXR,
+                    EALU PASS X,
+                    SIGN X OP;
+                    
+ORG=0x058;
+FSQR.64.50:
+                NAD(FSQR.64.100A),
+                    BEN 7 EY1,
+                    BEN 8 EY0 3C,
+                    BEN 9 NOT FY0 3C,
+                    CLEAR D,
+                    DIV OE,
+                    EXMX EXL;
+                    
+                NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x05A;
+FSQR.80.50:     
+                NAD(ca+1),
+                    RF RD SEL CNTR,
+                    FLOW SEL XY,
+                    LAT Y;
+                    
+                    NAD(FSQR.80.150A),
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    MALU PASS Y,
+                    EYMX PRIO ENCODE,
+                    EALU PASS Y,
+                    SET FRC FLAG LO LAT A,
+                    LD BOTH PREC REG 3(2);
+
+ORG=0x05C;
+FIND.FIRST.50:
+                NAD(FIND.FIRST.100),
+                    FLOW Y TO T,
+                    SHIFT L PRIO ENCODE,
+                    MALU PASS Y,
+                    EYMX PRIO ENCODE,
+                    EALU PASS Y,
+                    SET FRC FLAG LO LAT A,
+                    LD BOTH PREC REG 3(2);
+                    
+                    
+                    NAD(MEMOP.A),
+                    BEN 9 ALU DATA NOT VALID;
+                    
+ORG=0x05E;
+ASCII.ADD.50:
+                NAD(ASCII.ADD.100),
+                    FLOW X TO S,
+                    LD RALU CNTL X,
+                    SHIFT PASS,
+                    ASCII LAT;
+               
+ASCII.SUB.160B:
+                NAD(ASCII.SUB.160C),
+                    RFX RD(0x10),
+                    FLOW SEL CX,
+                    LAT Y;
+ORG=0x060;
+ASCII.ADDC.50:
+                NAD(ASCII.ADDC.100),
+                    FLOW X TO S,
+                    LD RALU CNTL X,
+                    SHIFT PASS,
+                    ASCII LAT;
+                    
+ASCII.SUB.160C:  NAD(ASCII.SUB.250),
+                 FLOW Y TO T,
+                     SHIFT PASS,
+                     MALU PASS Y,
+                     OVERRIDE RALU;
+                     
+ORG=0x062;
+ASCII.SUB.50:
+                 NAD(ASCII.SUB.100),
+                     FLOW X TO S,
+                     LD RALU CNTL X,
+                     SHIFT PASS,
+                     ASCII LAT;
+                     
+ASCII.SUB.180:
+                 NAD(ASCII.SUB.180A),
+                     OVERRIDE RALU,
+                     FPA DATA VALID,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+ORG=0x064;
+ASCII.SUBC.50:
+                 NAD(ASCII.SUBC.100),
+                     FLOW X TO S,
+                     LD RALU CNTL X,
+                     SHIFT PASS,
+                     ASCII LAT;
+                     
+ASCII.SUB.180A:
+                 NAD(ASCII.SUB.180B),
+                     OVERRIDE RALU,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+ORG=0x066;
+CVT.AI.50:
+                 NAD(CVT.AI.100),
+                     FLOW Y TO S,
+                     ASCII LAT;
+                     
+ASCII.SUB.180B: 
+                 NAD(ASCII.SUB.180C),
+                     RFX RD(0x11),
+                     FLOW SEL CX,
+                     LAT Y;
+                     
+ORG=0x068;
+CVT.IA.50:
+                 NAD(CVT.IA.100),
+                     READ,
+                     RFX RD(0x41),
+                     FLOW SEL XY,
+                     LAT X,
+                     FLOW X TO T;
+                     
+ASCII.SUB.180C:
+                 NAD(ASCII.SUB.250),
+                     FLOW Y TO T,
+                     SHIFT PASS,
+                     MALU PASS Y,
+                     OVERRIDE RALU;
+                     
+ORG=0x06A;
+FRAC.OVFL.170.2:
+                 NAD(FRACOVFL.190),
+                     MALU ZERO,
+                     OVERRIDE RALU,
+                     FPA DATA VALID,
+                     EXMX EXR,
+                     EALU PASS X,
+                     SIGN X OP,
+                     EXR;
+                     
+ASCII.SUB.100:
+                 NAD(0x2C6),
+                     OVERRIDE RALU,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+ORG=0x06C;
+WRITE.STATUS.100:
+                 NAD(WRITE.STATUS.150),
+                     FLOW X TO T,
+                     SHIFT PASS,
+                     MALU PASS Y,
+                     OVERRIDE RALU,
+                     ZERO RALU CNTRLS;
+                     
+WRITE.STATUS.150:
+                 NAD(DECODE),
+                 FLOW X TO T,
+                     SHIFT PASS,
+                     MALU PASS Y,
+                     OVERRIDE RALU,
+                     ZERO RALU CNTRLS,
+                     WR STATUS;
+                     
+ORG=0x06E;
+FCMPX.80.50:
+FCMPX.BR.80.50:
+                 NAD(FCMPX.32.50),
+                     RF RD SEL CNTR,
+                     FLOW SEL XY,
+                     LAT X,
+                     LAT Y,
+                     SHIFT R EXP DIFF;
+                     
+CVT.DE.200D.3:
+                 NAD(CVT.SE.200D),
+                     FLOW Y TO T,
+                     SHIFT L EMIT(11),
+                     PACK EXT FRAC,
+                     OVERRIDE RALU,
+                     INPUT LAT,
+                     MALU PASS Y;
+                     
+ORG=0x070;
+FINP.64.50:
+                 NAD(0x208),
+                     BEN 9 NOT SIGN EYL,
+                     SET XI ZERO LAT,
+                     RFX RD(0x2B),
+                     FLOW SEL XY,
+                     LAT X,
+                     EXL;
+                     
+                 NAD(MEMOP.A),
+                     BEN 9 ALU DATA NOT VALID;
+          
+ORG=0x072;
+FINP.80.50:
+                 NAD(ca+1),
+                     RF RD SEL CNTR,
+                     FLOW SEL XY,
+                     LAT Y;
+                     
+                 NAD(FINP.80.100A),
+                     BEN 9 NOT SIGN EYL,
+                     SET XI ZERO LAT,
+                     RFX RD(0x2C),
+                     FLOW SEL XY,
+                     EXL;
+                     
+ORG=0x074;
+ASCII.SUB.150:
+                 NAD(ASCII.SUB.160A),
+                     OVERRIDE RALU,
+                     FPA DATA VALID,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+                     NAD(ASCII.SUB.160A),
+                     OVERRIDE RALU,
+                     FPA DATA VALID,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+ORG=0x076;
+ASCII.SUB.160A:
+                 NAD(ASCII.SUB.160A),
+                     OVERRIDE RALU,
+                     FPA DATA VALID,
+                     ASCII X-Y,
+                     SHIFT ZERO,
+                     WIRE OR ZERO;
+                     
+                     NAD(FADD.32.150A),
+                     TRAP ALU,
+                     BEN 9 MALU EQ 0,
+                     SHIFT R EXP DIFF,
+                     MALU Y+X;
+                     
+ORG=0x078;
+SEND.MSG:       
+                 NAD(SEND.MSG.1),
+                 SET SIGN MSB LAT,
+                     RESET MUL LAT;
+                     
+SEND.MSG.3:     
+                 NAD(SEND.MSG.4),
+                     EALU PASS X,
+                     SIGN ZERO,
+                     TRAP ALU,
+                     OVERRIDE RALU,
+                     EXMX EXR;
+                     
+SEND.MSG.4:
+                 NAD(SEND.MSG.5),
+                     EALU PASS X,
+                     SIGN ZERO,
+                     EXMX EXR,
+                     OVERRIDE RALU,
+                     TRAP ALU;
+                     
+SEND.MSG.5:      NAD(SEND.MSG.200),
+                 EALU PASS X,
+                     SIGN ZERO,
+                     EXMX EXR,
+                     LD RALU CNTL ZERO,
+                     INPUT LAT;
+                     
+ORG=0x07C;
+FADD.32.125B:
+                 NAD(FADD.32.150C),
+                     ENABLE EXCEPTIONS,
+                     SHIFT R EXP DIFF,
+                     MALU Y+X,
+                     EXMX ADD,
+                     EYMX ZERO,
+                     EALU HW,
+                     SIGN ADD,
+                     ALLOW HW SET IX,
+                     EYR,
+                     INPUT LAT;
+                     
+FADD.32.125D:
+                 NAD(FADD.32.150D),
+                     BEN 8 XNAN,
+                     BEN 9 NOT YNAN,
+                     FLOW Y TO S;
+                     
+FADD.32.175XNAN:
+                 NAD(FADD.32.200XNAN),
+                     BEN 9 NOT FRACX F BIT,
+                     FLOW X TO S;
+                     
+ORG=0x07F;
+TRAP1.50:          
+                 NAD(MEMOP.B);
+                     
+ORG=0x080;
+FADD.32.100A:
+                 NAD(FADD.32.125A),
+                     SHIFT R EXP DIFF,
+                     MALU Y+X,
+                     EXMX ADD,
+                     EALU PASS X,
+                     SIGN X OP,
+                     EXR;
+                     
+FADD.32.100B:
+                 NAD(FADD32.125B),
+                     SHIFT R EXP DIFF,
+                     MALU Y+X,
+                     EXMX ADD,
+                     EYMX ZERO,
+                     EALU HW,
+                     SIGN ADD;
+                    
+FADD.32.200C:    
+                 NAD(0x186),
+                     MALU ZERO,
+                     EALU ZERO,
+                     SIGN RMODE,
+                     EXR,
+                     EYR;
+                     
+FADD.32.100D:    NAD(FADDD.32.100B.1),
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX ADD,
+                 EALU PASS X,
+                 SIGN ADD;
+          
+ORG=0x084;
+FADD.32.150A:
+                 NAD(FADD.32.200A),
+                 BEN 9 NOT PACK I BIT,
+                 SHIFT R EXP DIFF,
+                 MALU Y+X;
+                 
+FADD.32.150B:    
+                 NAD(FADD.32.200C),
+                 EXMX ZERO,
+                 EALU HALF X,
+                 EXR,
+                 SIGN XR,
+                 SET SIGN MSB LAT;
+          
+ORG=0x086;  
+FADD.32.200A:
+                 NAD(FADD.32.250A),
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX EXR,
+                 EYMX ZERO,
+                 EALU HW,
+                 SIGN X OP,
+                 EXR;
+
+FADD.32.200B:
+                 NAD(FADD.32.250B),
+                 BEN 9 NOT UN TRAP,
+                 SHIFT R EXP DIFF,
+                 MALU Y+X;
+               
+ORG=0x088;
+FADD.32.250B:
+                 NAD(SEND.MSG),
+                 EYMX EMIT SHORT(FLOATING.UNFL),
+                 EALU PASS Y,
+                 SET UN,
+                 EXR;
+
+                 NAD(FADD.32.300C),
+                 FPA DATA VALID,
+                 BEN 9 NOT FLUSH TO ZERO,
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX ZERO,
+                 EALU HALF X,
+                 EXR,
+                 SIGN ADD;
+                 
+ORG=0x08A;
+FADD.32.300C:
+                 NAD(DECODE),
+                 MALU ZERO,
+                 EXMX ZERO,
+                 EALU HALF X,
+                 SIGN ADD;
+                 
+                 NAD(DECODE),
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX ZERO,
+                 EALU HALF X,
+                 SIGN ADD;
+                 
+ORG=0x08C;
+FADD.32.150C:
+                 NAD(ca+1),
+                 FPA DATA VALID,
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX ADD,
+                 EYMX ZERO,
+                 EALU HW,
+                 SIGN ADD;
+                 
+ORG=0x08D;
+                 NAD(0x000),
+                 FPA DATA VALID,
+                 SHIFT R EXP DIFF,
+                 MALU Y+X,
+                 EXMX ADD,
+                 EYMX ZERO,
+                 EALU HW,
+                 SIGN ADD;
+                
+FADD.32.250A:
+                 NAD(ca+1),
+                 FPA DATA VALID,
+                 MALU Y+X,
+                 EXMX ADD,
+                 EYMX ZERO,
+                 EALU HW,
+                 SIGN ADD;
+                 
+                 NAD(DECODE),
+                 SHIFT R EXP DIFF,
+                 EXMX EXR,
+                 EALU PASS X,
+                 SIGN ADD,
+                 EYR,
+                 INPUT LAT;
+                 
+ORG=0x090;
+FADD.32.150D:
+                 NAD(FADD.32.200YNAN),
+                 BEN 9 NOT FRACX F BIT,
+                 FLOW Y TO S;
+                 
+                 NAD(FADD.32.200INFS),
+                 BEN 8 XINF,
+                 BEN 9 NOT YINF,
+                 EXMX EXL;
+                 
+                 NAD(FADD.32.200BOTHNAN),
+                 BEN 9 NOT FRACX F BIT,
+                 FLOW Y TO S;
+                 
+                 NAD(FADD.32.175XNAN),
+                 FLOW X TO S;
+              
+FADD.32.200YNAN:
+                 NAD(INVALID),
+                 BEN 9 NOT IV TRAP,
+                 EYMX EMIT(0),
+                 EALU PASS Y,
+                 EXR;
+                 
+                 NAD(DELIVER.Y.250A),
+                 EYMX EYL,
+                 SIGN Y OP,
+                 EALU PASS Y,
+                 BEN 9 NOT PREC MSB;
+                
+DELIVER.Y.250A:
+                 NAD(DELIVER.Y.300A),
+                 FLOW Y TO T,
+                 SHIFT PASS,
+                 MALU PASS Y,
+                 EYMX EYR,
+                 EALU PASS Y,
+                 SIGN Y OP,
+                 TWO WORDS TO ALU AFTER TRAP;
+                 
+DELIVER.Y.250B:
+                 NAD(DELIVER.Y.300B),
+                 FLOW Y TO T,
+                 SHIFT PASS,
+                 MALU PASS Y,
+                 EYMX EYR,
+                 EALU PASS Y,
+                 SIGN Y OP,
+                 ONE WORD TO ALU AFTER TRAP;
+                 
+FADD.32.200XNAN:
+                 NAD(INVALID),
+                 BEN 9 NOT IV TRAP,
+                 EYMX EMIT(0),
+                 EALU PASS Y,
+                 EXR;
+                 
+                 NAD(DELIVER.X.250A),
+                 EXMX EXL,
+                 SIGN X OP,
+                 EALU PASS X,
+                 EXR,
+                 BEN 9 NOT PREC MSB;
+                 
+DELIVER.Y.300B:
+                 NAD(0x000),
+                 FLOW Y TO T,
+                 SHIFT PASS,
+                 MALU PASS Y,
+                 EYMX EYR,
+                 EALU PASS Y,
+                 SIGN Y OP;
+                 
+ORG=0x09B;
+FMUL.32.125:
+                 NAD(FMUL.32.150A),
+                 FLOW X TO S,
+                 MALU ZERO,
+                 MUL OE,
+                 EXMX EXR,
+                 EYMX EYL,
+                 EALU HW NOT EYMX ZERO,
+                 SIGN X OP;
+                 
+FMUL.32.100A:
+                 NAD(FMUL.32.150B),
+                 WIRE OR ZERO,
+                 BEN 8 XN0,
+                 BEN 9 NOT YN0;
+                 
+                 
+FMUL.32.100B:
+                 NAD(FMUL.32.125),
+                 FLOW X TO S,
+                 MALU ZERO,
+                 MUL OE,
+                 EXMX EXR,
+                 EYMX EYL,
+                 EALU HW NOT EYMX ZERO,
+                 SIGN X OP;
+                 
+                 
+FMUL.32.100C:
+                 NAD(FMULN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+                 
+FMUL.32.100D:    
+                 NAD(FMULN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+                 
+ORG=0x0A0;
+FMUL.32.100A:
+                 NAD(ca+1),
+                 ENABLE EXCEPTIONS,
+                 MALU ZERO,
+                 EXMX EXR,
+                 EYMX EYL,
+                 EALU HW NOT EYMX ZERO,
+                 EYR,
+                 SIGN X OP,
+                 INPUT LAT,
+                 ALLOW HW SET IX;
+                 
+ZERO.OUTSIGNX:
+                 NAD(ca+1),
+                 FPA DATA VALID,
+                 MALU ZERO,
+                 EXMX ZERO,
+                 EYMX EYR,
+                 EALU X+Y,
+                 EYR,
+                 INPUT LAT,
+                 SIGN Y OP;
+                 
+                 NAD(0x000),
+                 MALU ZERO,
+                 EXMX ZERO,
+                 EYMX EYR,
+                 EALU X+Y,
+                 EYR,
+                 INPUT LAT,
+                 SIGN Y OP;
+                 
+FMUL.32.200B:
+                 NAD(0x000),
+                 OVERRIDE RALU,
+                 MALU ZERO,
+                 EXMX EXR,
+                 EALU PASS X,
+                 INPUT LAT,
+                 SIGN X OP;
+                 
+ORG=0x0A4;
+FMUL.32.150B:   
+                 NAD(FMUL.32.200B),
+                 FPA DATA VALID,
+                 MALU ZERO,
+                 EALU ZERO,
+                 EXR,
+                 SIGN MUL OR DIV,
+                 OVERRIDE RALU;
+                 
+FMUL.32.150C:
+                 NAD(FMUL.32.200C),
+                 WIRE OR ZERO;
+                 
+FMUL.32.150D:
+                 NAD(FMUL.32.200B),
+                 FPA DATA VALID,
+                 MALU ZERO,
+                 EALU ZERO,
+                 EXR,
+                 SIGN MUL OR DIV;
+ORG=0x0B3;
+FMUL.64.100A:
+                 NAD(ca+1),
+                 SHIFT R EALU,
+                 FLOW X TO S;
+
+                 NAD(FMUL.32.100A),
+                 BEN 8 EX1 OR EY1 26,
+                 BEN 9 NOT EX0 OR EY0,
+                 SHIFT R EALU,
+                 FLOW X TO S;
+
+FMUL.64.600:     
+                 NAD(ca+1),
+                 SHIFT PASS,
+                 FLOW X TO S;
+
+                 NAD(ca+1),
+                 SHIFT PASS,
+                 FLOW X TO S;
+
+FMUL.32.700:    
+                 NAD(ca+1),
+                 SHIFT PASS,
+                 FLOW X TO S,
+                 EXMX EXR,
+                 EYMX EYR,
+                 EALU X+Y,
+                 EXR,
+                 SIGN X OP;
+
+FMUL.32.750:    
+                 NAD(FMUL.32.800),
+                 SHIFT PASS,
+                 FLOW X TO S,
+                 MALU ZERO,
+                 MUL OE,
+                 EXMX EXR,
+                 EYMX ZERO,
+                 EALU HW,
+                 SIGN X OP;
+
+FMUL.32.850:     
+                 NAD(ca+1),
+                 ENABLE EXCEPTIONS,
+                 MALU ZERO,
+                 EXMX EXR,
+                 EYMX ZERO,
+                 EALU HW,
+                 EYR,
+                 SIGN X OP,
+                 INPUT LAT,
+                 ALLOW HW SET IX;
+
+                 NAD(ca+1),
+                 FPA DATA VALID,
+                 MALU ZERO,
+                 EXMX EXR,
+                 EYMX EYR,
+                 EALU HW,
+                 EYR,
+                 INPUT LAT,
+                 SIGN X OP;
+
+                 NAD(0x000),
+                 MALU ZERO,
+                 EXMX EXR,
+                 EYMX ZERO,
+                 EALU HW,
+                 EYR,
+                 INPUT LAT,
+                 SIGN X OP;
+
+ORG=0x0BC;
+FDIV.64.175A:
+                 NAD(FDIV.64.200A);
+
+FDIV.32.175A:    NAD(FDIV.32.200A);
+
+ORG=0x0BE;
+FDIVR.32.200A:   
+                 NAD(FDIV.32.175A),
+                 LD SEQ CNTR(11),
+                 DIV CLK QB Q RS;
+
+FDIVR.64.200A:   
+                 NAD(FDIV.64.175A),
+                 LD SEQ CNTR(26),
+                 DIV CLK QB Q RS;
+
+ORG=0x0C0;
+FDIVR.32.100A:
+                 NAD(FDIVZ.32.150A),
+                 BEN 8 XN0,
+                 BEN 9 NOT YN0;
+
+FDIV.32.100B:
+                 NAD(FDIV.32.150A),
+                 FLOW X TO T,
+                 SHIFT L EMIT(40),
+                 FRC QUO BITS(5),
+                 CLA INIT REM,
+                 DIV CLK QB RS,
+                 DIV LD R CLR S;
+
+                 NAD(FDIVN.32.100A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+
+                 NAD(FDIVN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+                 
+                 NAD(FDIVN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+
+FDIVR.32.150A:
+                 NAD(FDIVR.32.200A),
+                 DIV CLK QB Q RS,
+                 EXMX EXL,
+                 EYMX EYR,
+                 EALU X-Y,
+                 SIGN Y OP,
+                 EXR;
+ORG=0x0C6;
+FDIV.32.200A:
+                NAD(ca),
+                BEN 9 CNTR EQ 0,
+                DIV CLK QB Q RS;
+
+                NAD(ca+1),
+                DIV CLK QB Q RS,
+                FRC QUO BITS(0);
+  
+
+                NAD(FDIV.32.EXCP.PAD),
+                FPA DONE NEXT,
+                EXMX EXR,
+                EYMX EMIT(126),
+                EALU X+Y,
+                EXR,
+                SIGN X OP,
+                SET FRC FLAG LO LAT,
+                DIV Q OUT CLR D;
+
+FDIV.32.LAST.BETA:
+               NAD(ca+1),
+               ENABLE EXCEPTIONS,
+               DIV Q OUT CLR D,
+               EXMX EXR,
+               EYMX ZERO,
+               EALU HW,
+               SIGN X OP,
+               EYR,
+               INPUT LAT,
+               ALLOW HW SET IX;
+
+FDIV.32.1600:
+               NAD(ca+1),
+               DIV Q OUT CLR D,
+               FPA DATA VALID;
+
+               NAD(DECODE),
+               DIV Q OUT CLR D,
+               EXMX EXR,
+               EYMX ZERO,
+               EALU HW,
+               SIGN X OP,
+               EYR,
+               INPUT LAT;
+
+			
+ORG=0x0CC;
+FDIVR.32.100A:       
+                 NAD(0x200),
+                 BEN 8 XN0,
+                 BEN 9 NOT YN0;
+
+FDIVR.32.100B:   NAD(FDIVR.32.150A),      
+                 FLOW Y TO T,
+                 SHIFT L EMIT(40),
+                 FRC QUO BITS(5),
+                 CLA INIT REM,
+                 DIV CLK QB RS,
+                 DIV LD R CLR S,
+                 EXMX EXL,
+                 EYMX EYL,
+                 EALU X+Y,
+                 SIGN Y OP,
+                 EYR;
+
+                 NAD(FDIVRN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+
+                 NAD(FDIVRN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+
+                 NAD(FDIVRN.32.150A),
+                 BEN 8 XNAN,
+                 BEN 9 NOT YNAN,
+                 FLOW Y TO S,
+                 WIRE OR ZERO;
+
+ORG=0x0D0;
+FDIV.64.100A:
+                NAD(FDIVZ.32.150A),
+                BEN 8 XN0,
+                BEN 9 NOT YN0;
+
+FDIV.64.100B:
+               NAD(FDIV.64.150A),
+               FLOW X TO T,
+               SHIFT L EMIT(10),
+               FRC QUO BITS(5),
+               CLA INIT REM,
+               DIV CLK QB RS,
+               DIV LD R CLR S;
+
+               NAD(FDIVN.32.150A),
+               BEN 8 XNAN,
+               BEN 9 NOT YNAN,
+               FLOW Y TO S,
+               WIRE OR ZERO;
+
+               NAD(FDIVN.32.150A),
+               BEN 8 XNAN,
+               BEN 9 NOT YNAN,
+               FLOW Y TO S,
+               WIRE OR ZERO;
+
+FDIV.64.150A:  
+               NAD(FDIVR.64.200A),
+               DIV CLK QB Q RS,
+               EXMX EYL,
+               EYMX EYR,
+               EALU X-Y,
+               SIGN Y OP,
+               EXR;
+
+ORG=0x0D6;
+FDIV.64.200A:
+               NAD(ca),
+               BEN 9 CNTR EQ 0,
+               DIV CLK QB Q RS;
+
+               NAD(ca+1),
+               DIV CLK QB Q RS,
+               FRC QUO BITS(0);
+
+               NAD(FDIV.4.EXCP.PAD),
+               EXMX EXR,
+               EYMX EMIT(1022),
+               EALU X+Y,
+               EXR,
+               SIGN X OP,
+               EYR,
+               INPUT LAT,
+               ALLOW HW SET IX;
+
+               NAD(ca+1),
+               EALU ZERO,
+               MALU ZERO,
+               ZERO RALU CNTRLS,
+               PACK EXT FRAC,
+               OVERRIDE RALU,
+               SIGN Y OP,
+               INPUT LAT;
+
+               NAD(CVT.SE.200D.1),
+               SHIFT L PRIO ENCODE,
+               FLOW SEL XC,
+               EYL,
+               MALU PASS Y,
+               EXMX EXR;
+
+ORG=0x0DC;
+FDIVR.64.100A:
+               NAD(FDIVRZ.32.150A),
+               BEN 8 XN0,
+               BEN 9 NOT YN0;
+
+FDIVR.64.100B:
+               NAD(FDIVR.64.150A),
+               FLOW Y TO T,
+               SHIFT L EMIT(10),
+               FRC QUO BITS(5),
+               CLA INIT REM,
+               DIV CLK QB RS,
+               DIV LD R CLR S,
+               EXMX EXL,
+               EYMX EYR,
+               EALU X+Y,
+               SIGN Y OP,
+               EYR;
+
+               NAD(FDIVRN.32.150A),
+               BEN 8 XNAN,
+               BEN 9 NOT YNAN,
+               FLOW Y TO S,
+               WIRE OR ZERO;
+
+               NAD(FDIVRN.32.150A),
+               BEN 8 XNAN,
+               BEN 9 NOT YNAN,
+               FLOW Y TO S,
+               WIRE OR ZERO;
+
+ORG=0x0E0;
+MUL.64.100A:
+               NAD(MUL.64.150A),
+               LD RALU CNTL X;
+
+MUL.64.100B:
+               NAD(MUL.64.125B),
+               MUL OE;
+
+MUL.64.150A:
+              NAD(ca+1),
+              LD INTERRUPT MASK(0x1E);
+
+              NAD(ca+1);
+
+              NAD(ca+1),
+              FPA DATA VALID,
+              PROD OE;
+
+              NAD(ca+1);
+
+
+              NAD(MUL.64.125B),
+              MALU ZERO,
+              ENABLE EXCEPTIONS,
+              INPUT LAT;
+
+MUL.64.LAST:
+              NAD(DECODE),
+              OVERRIDE RALU,
+              MALU ZERO,
+              INPUT LAT;
+
+ORG=0x0E8;
+DIV.64.100A: 
+              NAD(DIV.64.100C),
+              FLOW Y TO S,
+              SHIFT ZERO,
+              ZERO RALU CNTRLS,
+              MALU Y-X;
+
+DIV.64.100B:
+              NAD(DIV.64.150A),
+              BEN 9 NOT FY0 3C,
+              FLOW Y TO T,
+              SHIFT L PRIO ENCODE,
+              EXMX ZERO,
+              EYMX PRIO ENCODE,
+              EALU X+Y,
+              EXR,
+              DIV LD D CLR Q,
+              DIV CLK D,
+              DIV OE;
+
+DIV.64.150C:
+              NAD(ca+1),
+              FLOW Y TO S,
+              SHIFT ZERO,
+              MALU Y-X,
+              ZERO RALU CNTRLS,
+              OVERRIDE RALU,
+              INPUT LAT;
+
+              NAD(DIV.64.100B),
+              LD MICROFLAGS(1),
+              FLOW SEL XC,
+              LAT Y,
+              FLOW Y TO T,
+              SHIFT L PRIO ENCODE;
+
+ORG=0x0EC;
+DIVIDE.BYZERO:
+              NAD(SEND.MSG),
+              EYMX EMIT(INTEGER.DIV0),
+              EALU PASS Y,
+              EXR;
+
+              NAD(DIV.64.800C);
+
+ORG=0x0EE;
+DIV.64.150A:  
+              NAD(DIVIDE.BYZERO),
+              BEN 9 NOT INT DIV 0 TRAP,
+              SET INTEGER DZ;
+
+DIV.64.150B:
+              NAD(DIV.64.175B),
+              FLOW X TO T,
+              SHIFT L PRIO ENCODE,
+              EXMX EXR,
+              EYMX PRIO ENCODE,
+              CLEAR R,
+              EALU X-Y;
+
+DIV.64.200A:
+              NAD(DIV.64.250C),
+              FLOW X TO S,
+              SHIFT ZERO,
+              ZERO RALU CNTRLS,
+              MALU Y-X;
+
+DIV.64.200B:
+              NAD(DIV.64.250B),
+              FLOW X TO T,
+              SHIFT L PRIO ENCODE,
+              EXMX EXR,
+              EYMX PRIO ENCODE,
+              EALU X-Y,
+              EXR,
+              FRC QUO BITS(5),
+              DIV LD R CLR S,
+              DIV CLK QB RS;
+
+MUL.64.125B:
+              NAD(MUL.64.LAST),
+              FPA DATA VALID,
+              OVERRIDE RALU,
+              MALU ZERO;
+
+REM LAST:
+              NAD(DECODE),
+              MALU ZERO,
+              OVERRIDE RALU;
+
+DIV.64.175B:
+              NAD(DIV.64.200A),
+              BEN 9 NOT FRACY 00,
+              FLOW X TO T,
+              SHIFT L PRIO ENCODE,
+              EXMX EXR,
+              EYMX PRIO ENCODE,
+              CLEAR R,
+              EALU X-Y;
+
+DIV.64.250C:
+              NAD(DIV.64.300C),
+              BEN 9 NOT FLAG 2,
+              FLOW X TO S,
+              SHIFT ZERO,
+              MALU Y-X,
+              OVERRIDE RALU,
+              ZERO RALU CNTRLS,
+              INPUT LAT;
+
+ORG=0x0F6;
+DIV.64.300C:
+              NAD(DIV.64.200B),
+              LD MICROFLAGS(2),
+              FLOW SEL CX,
+              LAT X,
+              FLOW X TO T,
+              SHIFT L PRIO ENCODE;
+
+              NAD(DIV.64.200B),
+              LD MICROFLAGS(2),
+              FLOW SEL CX,
+              LAT X,
+              FLOW X TO T,
+              SHIFT L PRIO ENCODE;
+
+ORG=0x0F8;
+              NAD(DIV.64.300A),
+              BEN 8 EXR 00,
+              EXMX EXR,
+              EALU PASS X,
+              DIV CLK QB Q RS;
+
+DIV.64.300A:
+              NAD(DIV.64.350A),
+              BEN 9 NOT EXR 15,
+              EXMX EXR,
+              EALU PASS X,
+              DIV CLK QB Q RS;
+
+DIV.64.350E:
+             NAD(REM.64.800C),
+             BEN 9 EALU EQ 0,
+             EYMX EYR,
+             EALU X+Y,
+             EXMX ZERO,
+             LD RALU CNTL X;
+
+ORG=0x0FB;
+             NAD(DIV.64.350E),
+             DIV LD D CLR Q,
+             EXMX ZERO,
+             EYMX EYR,
+             EALU X+Y;
+
+DIV.64.350A:
+             NAD(DIV.64.400A),
+             LD RALU CNTL ZERO,
+             FLOW X TO T,
+             SHIFT L PRIO ENCODE,
+             MALU PASS Y;
+
+             NAD(DIV.64.PRELP);
+
+DIV.64.PRELP:
+            NAD(DIV.64.LOOP),
+            BEN 9 CNTR EQ 0,
+            EXMX ZERO,
+            EYMX EYR,
+            EALU X+Y;
+
+ORG=0x0FF;
+TRAP2.50:
+            NAD(TRAP2.100.A),
+            BEN 7 ALUOP 2,
+            BEN 8 ALUOP 3,
+            BEN 9 NOT ALUOP 4,
+            SHIFT R EXP DIFF,
+            MALU Y+X,
+            EXMX ADD,
+            EALU PASS X,
+            SIGN ADD,
+            RD STATUS;
+
+ORG=0x100;
+TRAP2.100.A:
+            NAD(WRITE.STATUS.100),
+            FLOW SEL CX,
+            LAT X,
+            FLOW X TO T,
+            SHIFT PASS,
+            MALU PASS Y,
+            LD BOTH PREC REG 2(2);
+
+TRAP.100.B:
+            NAD(ca),
+            RD STATUS;
+
+FMUL.32.800:
+            NAD(FMUL.32.850),
+            SHIFT PASS,
+            FLOW X TO S,
+            MALU ZERO,
+            EXMX EXR,
+            EYMX ZERO,
+            EALU HW,
+            SIGN X OP;
+
+         
+FMUL.80.850B.1:
+           NAD(UNDERFL.TRAP),
+           MALU ZERO,
+           EXMX EXR,
+           EYMX ZERO,
+           EALU HW,
+           SIGN Y OP;
+
+TRAP2.100.B:
+           NAD(FCMP.32.50),
+           SHIFT R EXP DIFF,
+           MALU Y+X,
+           EXMX ADD,
+           EALU PASS X,
+           SIGN ADD,
+           SET FSUB LAT,
+           EXR;
+
+           NAD(CVT.DE.2000.Z),
+           FLOW Y TO T,
+           SHIFT L EMIT(11),
+           SET FRC FLAG LO LAT B,
+           PACK EXT FRAC,
+           MALU PASS Y;
+
+TRAP2.100.G:
+           NAD(DECODE),
+           BEN 9 MEM OP,
+           ALLOW FIRST DECODE,
+           RF RD SEL HW,
+           FLOW SEL XY,
+           LAT X,
+           LAT Y,
+           EXL,
+           EYL,
+           FLOW X TO S,
+           SHIFT R EXP DIFF,
+           LD AND INCR RF CNTRS;
+
+TRAP2.100.H:
+           NAD(DECODE),
+           BEN 9 MEM OP,
+           FRC FIRST DECODE,
+           RF RD SEL HW,
+           FLOW SEL XY,
+           LAT X,
+           LAT Y,
+           EXL,
+           EYL,
+           FLOW X TO S,
+           SHIFT R EXP DIFF,
+           LD AND INCR RF CNTRS;
+
+ORG=0x108;
+DIV.64.LOOP:
+          NAD(ca),
+          BEN 9 CNTR EQ 0,
+          DIV CLK QB Q RS,
+          EXMX ZERO,
+          EYMX EYR,
+          EALU X+Y,
+          LD RALU CNTL X;
+       
+          NAD(REM.64.400C),
+          BEN 9 EALU EQ 0,
+          EXMX ZERO,
+          EYMX EYR,
+          EALU X+Y,
+          LD RALU CNTL X;
+
+
+REM.64.400C:
+         NAD(REM.64.450C),
+         BEN 9 NOT MUL OR DIV 99,
+         FLOW Y TO T,
+         SHIFT L PRIO ENCODE,
+         EXMX ZERO,
+         EYMX PRIO ENCODE,
+         EALU X+Y;
+
+DIV.64.400C:
+         NAD(DIV.64.450D),
+         DIV CLK QB Q RS,
+         FRC QUO BITS(1);
+
+REM.64.450C:
+         NAD(REM.64.500C),
+         FLOW Y TO T,
+         SHIFT L PRIO ENCODE,
+         MALU PASS Y,
+         OVERRIDE RALU,
+         EXMX ZERO,
+         EYMX PRIO ENCODE,
+         EXR,
+         EALU X+Y;
+
+         NAD(REM.64.500M),
+         MALU ZERO,
+         FLOW Y TO T,
+         SHIFT L PRIO ENCODE,
+         MALU PASS Y,
+         OVERRIDE RALU,
+         EXMX ZERO,
+         EYMX PRIO ENCODE,
+         EXR,
+         EALU X+Y,
+         INPUT LAT;
+
+REM.64.500C:
+         NAD(ca+1),
+         FLOW Y TO T,
+         SHIFT L PRIO ENCODE,
+         MALU PASS Y,
+         OVERRIDE RALU,
+         INPUT LAT;
+
+REM.64.500M:
+         NAD(REM.64.550C),
+         FLOW SEL CX,
+         LAT X,
+         FLOW X TO T;
+
+REM.64.550C:
+         NAD(ca+1),
+         EXMX EXR,
+         EYMX ZERO,
+         EALU X+Y,
+         FLOW X TO T,
+         SHIFT R EALU;
+
+         NAD(REM.64.600D),
+         CLEAR R,
+         FRC QUO BITS(0),
+         DIV CLK QB,
+         MALU ZERO,
+         OVERRIDE RALU;
+
+REM.64.600D:
+         NAD(REM.64.550D),
+         CLEAR R,
+         FRC QUO BITS(0),
+         DIV CLK QB,
+         MALU ZERO,
+         OVERRIDE RALU;
+
+
+         NAD(ca+1),
+         CLEAR R,
+         FRC QUO BITS(4),
+         DIV CLK QB,
+         OVERRIDE RALU;
+
+REM.64.550D:
+         NAD(REM.LAST),
+         FPA DATA VALID,
+         MALU ZERO,
+         OVERRIDE RALU;
+
+         
+
+
+
+
+         
+

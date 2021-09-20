@@ -1,0 +1,8 @@
+
+-- fields can have default values
+defaults::[([Int],Val)]
+defaults=[(afd,Ival 1),(ben1,Ival 4),(enable_div_misc,Ival 1),(override_ralu_field,Ival 1),
+  (flow_xtos,Ival 1), (exr_field,Ival 1),(shift,Ival 2),(mark_bit,Ival 1),(input_lat_field,Ival 1),
+  (mul_cnt_msb,Ival 1),(enable_excp,Ival 1),(msc_a,Ival 8),(msc_b,Ival 8),
+  (eymx,Ival 3),(latx,Ival 1),(laty,Ival 1),
+  (zero_eymx,Ival 1),(exl_field,Ival 1),(eyl_field,Ival 1)]
